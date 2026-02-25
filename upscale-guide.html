@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>업스케일 인수인계 가이드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface-hover: #222531;
+      --border: #2a2d3a;
+      --text: #e4e4e7;
+      --text-muted: #9ca3af;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --yellow: #fbbf24;
+      --yellow-bg: rgba(251, 191, 36, 0.08);
+      --yellow-border: rgba(251, 191, 36, 0.2);
+      --red: #f87171;
+      --red-bg: rgba(248, 113, 113, 0.08);
+      --red-border: rgba(248, 113, 113, 0.2);
+      --green: #4ade80;
+      --blue: #60a5fa;
+      --code-bg: #13151d;
+      --sidebar-w: 280px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .sidebar-header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .sidebar-header .badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 3px 10px;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-light);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .sidebar nav {
+      padding: 0 12px;
+    }
+
+    .sidebar nav a {
+      display: block;
+      padding: 8px 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      margin-bottom: 2px;
+    }
+
+    .sidebar nav a:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .sidebar nav a.active {
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--accent-light);
+      font-weight: 500;
+    }
+
+    .sidebar nav .nav-group {
+      margin-top: 16px;
+      padding: 0 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      padding: 48px 64px 96px;
+      max-width: 900px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .page-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 40px;
+      line-height: 1.6;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--yellow);
+      display: inline-block;
+    }
+
+    .subsection-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 28px 0 12px;
+    }
+
+    p {
+      margin-bottom: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .card-icon.slack { background: rgba(99, 102, 241, 0.15); }
+    .card-icon.people { background: rgba(74, 222, 128, 0.15); }
+    .card-icon.server { background: rgba(251, 191, 36, 0.15); }
+    .card-icon.drive { background: rgba(96, 165, 250, 0.15); }
+
+    .card-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .card-sublabel {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Info rows */
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-key {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      min-width: 120px;
+      flex-shrink: 0;
+    }
+
+    .info-value {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    /* Inline code */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--accent-light);
+      border: 1px solid var(--border);
+    }
+
+    /* Code blocks */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin: 16px 0;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-lang {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .code-copy {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .code-copy:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .code-copy.copied {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .code-block pre {
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    /* Alert */
+    .alert {
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 13px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .alert-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .alert-warning {
+      background: var(--yellow-bg);
+      border: 1px solid var(--yellow-border);
+      color: var(--yellow);
+    }
+
+    .alert-danger {
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      color: var(--red);
+    }
+
+    .alert p {
+      color: inherit;
+      margin: 0;
+    }
+
+    /* Lists */
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    li {
+      margin-bottom: 6px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    li code {
+      font-size: 12px;
+    }
+
+    /* Links */
+    a {
+      color: var(--accent-light);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Flow diagram */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 24px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .flow-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 22px;
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .flow-step-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-light);
+      margin-bottom: 4px;
+    }
+
+    .flow-step-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .flow-step-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .flow-arrow {
+      color: var(--text-muted);
+      font-size: 20px;
+      padding: 0 8px;
+    }
+
+    /* Option table */
+    .option-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+
+    .option-table th {
+      text-align: left;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .option-table td {
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .option-table tr:hover td {
+      background: var(--surface-hover);
+    }
+
+    /* Tag */
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .tag-tv {
+      background: rgba(96, 165, 250, 0.15);
+      color: var(--blue);
+    }
+
+    .tag-yt {
+      background: rgba(248, 113, 113, 0.15);
+      color: var(--red);
+    }
+
+    .tag-true {
+      background: rgba(74, 222, 128, 0.15);
+      color: var(--green);
+    }
+
+    .tag-false {
+      background: rgba(156, 163, 175, 0.15);
+      color: var(--text-muted);
+    }
+
+    /* Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Skip logic diagram */
+    .skip-logic {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .skip-example {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .skip-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .skip-folder {
+      color: var(--yellow);
+      min-width: 70px;
+    }
+
+    .skip-file {
+      color: var(--text);
+      flex: 1;
+    }
+
+    .skip-status {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .skip-status.match { color: var(--green); }
+    .skip-status.skip { color: var(--red); }
+
+    /* Mobile */
+    .menu-btn {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 200;
+      width: 40px;
+      height: 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 20px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 48px 20px 64px;
+      }
+
+      .menu-btn {
+        display: flex;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .flow {
+        flex-direction: column;
+      }
+
+      .flow-arrow {
+        transform: rotate(90deg);
+      }
+    }
+
+    /* Scroll progress */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: var(--sidebar-w);
+      right: 0;
+      height: 3px;
+      background: var(--border);
+      z-index: 99;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    @media (max-width: 768px) {
+      .progress-bar { left: 0; }
+    }
+
+    /* Tooltip */
+    .folder-hint {
+      position: relative;
+      cursor: help;
+      border-bottom: 1px dashed var(--text-muted);
+    }
+
+    /* Separator */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar">
+  <div class="progress-bar-fill" id="progressFill"></div>
+</div>
+
+<button class="menu-btn" id="menuBtn" aria-label="메뉴 열기">&#9776;</button>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>업스케일 인수인계</h1>
+    <span class="badge">콘랩셀 복사본</span>
+  </div>
+  <nav>
+    <div class="nav-group">프로젝트 정보</div>
+    <a href="#channels">채널</a>
+    <a href="#collaboration">협업</a>
+    <a href="#server">GPU 서버 접속</a>
+    <a href="#drive">구글드라이브</a>
+
+    <div class="nav-group">환경 세팅</div>
+    <a href="#setup">환경 구성</a>
+
+    <div class="nav-group">업스케일링 가이드</div>
+    <a href="#flow">동작 플로우</a>
+    <a href="#input-video">Input Video</a>
+    <a href="#skip-logic">스킵 로직</a>
+    <a href="#deinterlace">Deinterlace</a>
+    <a href="#run-script">실행 스크립트</a>
+    <a href="#options">옵션</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <h1 class="page-title">업스케일 인수인계 가이드</h1>
+  <p class="page-desc">
+    AI 비디오 업스케일링 프로젝트의 유지보수를 위한 인수인계 문서입니다.
+    GPU 서버 접속부터 업스케일링 실행까지 필요한 모든 정보를 담고 있습니다.
+  </p>
+
+  <!-- 프로젝트 관련 정보 -->
+  <section class="section" id="channels">
+    <h2 class="section-title">프로젝트 관련 정보</h2>
+
+    <h3 class="subsection-title">채널</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon slack">&#128172;</div>
+          <div>
+            <div class="card-label">프로젝트 채널</div>
+            <div class="card-sublabel">Slack</div>
+          </div>
+        </div>
+        <code>#proj-ai-video-upscaling</code>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon slack">&#128203;</div>
+          <div>
+            <div class="card-label">업스케일링 로깅 채널</div>
+            <div class="card-sublabel">진행 상태 및 처리 결과 확인</div>
+          </div>
+        </div>
+        <code>#_logger_video_upscale</code>
+      </div>
+    </div>
+    <p>로깅 채널을 통해서 현재 진행 중인 동영상과 처리 결과 등을 확인할 수 있습니다.</p>
+  </section>
+
+  <section class="section" id="collaboration">
+    <h3 class="subsection-title">협업</h3>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon people">&#128101;</div>
+        <div>
+          <div class="card-label">협업 담당자</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-key">실무자</span>
+        <span class="info-value">Studio Group 문희찬님 — 특정 이슈나 전달/공유사항이 있으면 희찬님과 대화</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">의사결정자</span>
+        <span class="info-value">Studio Group 남윤승님</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">개발 관련</span>
+        <span class="info-value">Platform Cell 임가람 → 주재환님</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Weekly 미팅</span>
+        <span class="info-value">매주 수요일 14:00 (<a href="https://zoom.us/j/9606519003" target="_blank">Zoom 링크</a>)</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="server">
+    <h3 class="subsection-title">물리 GPU 서버 접속</h3>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon server">&#9881;</div>
+        <div>
+          <div class="card-label">GPU 서버 정보</div>
+          <div class="card-sublabel">Ubuntu 18.04 LTS</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-key">사전 조건</span>
+        <span class="info-value">OPGG VPN 활성화 필요</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">프로젝트 위치</span>
+        <span class="info-value"><code>/home/woghks/projects/ai-video-upscale</code></span>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy" data-code="ssh woghks@172.27.0.31">복사</button>
+      </div>
+      <pre>ssh woghks@172.27.0.31</pre>
+    </div>
+
+    <h4 class="subsection-title" style="font-size: 14px;">Bitbucket</h4>
+    <p><a href="https://bitbucket.org/opgg/workspace/overview" target="_blank">https://bitbucket.org/opgg/workspace/overview</a></p>
+  </section>
+
+  <section class="section" id="drive">
+    <h3 class="subsection-title">구글드라이브</h3>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon drive">&#128193;</div>
+        <div>
+          <div class="card-label">업스케일 대상 및 완료 동영상</div>
+          <div class="card-sublabel"><a href="https://drive.google.com/drive/folders/15u-5J-uoVFhaKYVbl7f4HmwEVRh7320v" target="_blank">Google Drive 바로가기</a></div>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-key"><code>inputs/</code></span>
+        <span class="info-value">업스케일 처리 대상 동영상 (미완료)</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key"><code>outputs/</code></span>
+        <span class="info-value">업스케일 처리 완료 동영상</span>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 환경 세팅 -->
+  <section class="section" id="setup">
+    <h2 class="section-title">환경 세팅</h2>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">&#9888;&#65039;</span>
+      <p>가상환경 하나 따로 구성하셔서 사용하시기를 권장합니다.</p>
+    </div>
+
+    <h3 class="subsection-title">1. ffmpeg 설치</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy" data-code="sudo apt update
+sudo apt install ffmpeg">복사</button>
+      </div>
+      <pre>sudo apt update
+sudo apt install ffmpeg</pre>
+    </div>
+
+    <h3 class="subsection-title">2. requirements.txt 설치</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy" data-code="pip install --upgrade pip
+pip install -r requirements.txt">복사</button>
+      </div>
+      <pre>pip install --upgrade pip
+pip install -r requirements.txt</pre>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 업스케일링 동작 설명 -->
+  <section class="section" id="flow">
+    <h2 class="section-title">업스케일링 동작 설명</h2>
+
+    <h3 class="subsection-title">처리 플로우</h3>
+    <p>하나의 동영상을 기준으로 아래 순서대로 동작합니다.</p>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-step-num">STEP 1</div>
+        <div class="flow-step-label">다운로드</div>
+        <div class="flow-step-desc">Google Drive → 서버</div>
+      </div>
+      <div class="flow-arrow">&#10132;</div>
+      <div class="flow-step">
+        <div class="flow-step-num">STEP 2</div>
+        <div class="flow-step-label">업스케일링</div>
+        <div class="flow-step-desc">Real-ESRGAN 처리</div>
+      </div>
+      <div class="flow-arrow">&#10132;</div>
+      <div class="flow-step">
+        <div class="flow-step-num">STEP 3</div>
+        <div class="flow-step-label">업로드</div>
+        <div class="flow-step-desc">서버 → Google Drive</div>
+      </div>
+    </div>
+
+    <div class="alert alert-danger">
+      <span class="alert-icon">&#10071;</span>
+      <p>모든 동영상을 다 다운로드 한 이후에 업스케일링하는 방식이 <strong>아닙니다!</strong><br>
+      하나의 동영상 단위로 다운로드 → 업스케일 → 업로드를 반복합니다.</p>
+    </div>
+  </section>
+
+  <section class="section" id="input-video">
+    <h3 class="subsection-title">Input Video 설정</h3>
+    <p><code>constants.py</code> 파일에서 구글드라이브 폴더 ID를 설정합니다.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">python</span>
+        <button class="code-copy" data-code="GCP_GOOGLE_DRIVE_OUTPUTS_FOLDER_ID = '14g7AjXtv0iNtQluToQL0QkpJ2yc4rl0g'  # outputs 폴더
+GCP_GOOGLE_DRIVE_INPUTS_FOLDER_ID = '1irwQ6_HNrw4NMqOdgLgqLEKuynH-a6Pz'  # inputs 폴더">복사</button>
+      </div>
+      <pre><span style="color: #e4e4e7;">GCP_GOOGLE_DRIVE_OUTPUTS_FOLDER_ID</span> = <span style="color: #4ade80;">'14g7AjXtv0iNtQluToQL0QkpJ2yc4rl0g'</span>  <span style="color: #6b7280;"># outputs 폴더</span>
+<span style="color: #e4e4e7;">GCP_GOOGLE_DRIVE_INPUTS_FOLDER_ID</span> = <span style="color: #4ade80;">'1irwQ6_HNrw4NMqOdgLgqLEKuynH-a6Pz'</span>  <span style="color: #6b7280;"># inputs 폴더</span></pre>
+    </div>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">&#9888;&#65039;</span>
+      <p><strong>Folder ID 확인 방법:</strong> 해당 폴더에 <strong>직접 접속</strong>해야 해당 폴더의 ID가 URL에 표시됩니다.
+      하위 폴더(예: SD한빛소프트배온게임넷스타리그)의 동영상을 처리하려면 해당 하위 폴더에 직접 들어가서 ID를 확인해야 합니다.</p>
+    </div>
+  </section>
+
+  <section class="section" id="skip-logic">
+    <h3 class="subsection-title">스킵 로직</h3>
+    <p>이미 처리가 완료된 동영상은 자동으로 스킵됩니다. 비교 기준은 <strong>확장자를 제외한 파일명</strong>입니다.</p>
+
+    <div class="skip-logic">
+      <p style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">예시</p>
+      <div class="skip-example">
+        <div class="skip-row">
+          <span class="skip-folder">inputs/</span>
+          <span class="skip-file">도와주셔서감사합니다희지님<span style="color: var(--text-muted);">.mxf</span></span>
+          <span class="skip-status">파일명: 도와주셔서감사합니다희지님</span>
+        </div>
+        <div class="skip-row">
+          <span class="skip-folder">outputs/</span>
+          <span class="skip-file">도와주셔서감사합니다희지님<span style="color: var(--text-muted);">.mp4</span></span>
+          <span class="skip-status match">&#10003; 일치 → 스킵</span>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px; margin-bottom: 0;">
+        확장자(.mxf / .mp4)가 달라도 파일명이 같으면 이미 처리된 것으로 판단하여 스킵합니다.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" id="deinterlace">
+    <h3 class="subsection-title">Deinterlace</h3>
+    <div class="card">
+      <p style="margin-bottom: 8px;">Deinterlace는 <strong>YouTube 콘텐츠용</strong> 동영상을 업스케일할 때 필요한 기능입니다.</p>
+      <p style="margin-bottom: 0;">TV 편성용에서는 <strong>사용하지 않으며</strong>, 대상 동영상의 사용 목적에 따라 True/False를 결정합니다.</p>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 실행 스크립트 -->
+  <section class="section" id="run-script">
+    <h2 class="section-title">실행 스크립트</h2>
+
+    <h3 class="subsection-title">inference_realesrgan_videos.py</h3>
+    <p><code>multi_run()</code> 함수에 상황(TV or YouTube)에 맞는 옵션을 넣어서 실행합니다.</p>
+
+    <div class="card">
+      <div class="info-row">
+        <span class="info-key"><code>input_root</code></span>
+        <span class="info-value">Google Drive에서 다운로드된 동영상이 저장되는 서버 내 경로</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key"><code>output_root</code></span>
+        <span class="info-value">업스케일 완료된 동영상이 저장되는 서버 내 경로 → Google Drive로 업로드됨</span>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">실행 커맨드 (백그라운드 실행)</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">bash</span>
+        <button class="code-copy" data-code="nohup python -u inference_realesrgan_videos.py &">복사</button>
+      </div>
+      <pre>nohup python -u inference_realesrgan_videos.py &amp;</pre>
+    </div>
+    <p>실행 후 현재 디렉토리에 <code>nohup.out</code> 로그 파일이 생성됩니다. 해당 파일을 읽으면 동작 로그를 확인할 수 있습니다.</p>
+  </section>
+
+  <section class="section" id="options">
+    <h3 class="subsection-title">옵션</h3>
+    <table class="option-table">
+      <thead>
+        <tr>
+          <th>목적</th>
+          <th>deinterlace</th>
+          <th>model_name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-tv">TV</span> &nbsp;TV 활용 목적</td>
+          <td><span class="tag tag-false">False</span></td>
+          <td><code>RealESRGAN_x2plus</code></td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-yt">YouTube</span> &nbsp;Youtube 활용 목적</td>
+          <td><span class="tag tag-true">True</span></td>
+          <td><code>RealESRGAN_x4plus</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+  // Copy button
+  document.querySelectorAll('.code-copy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const code = btn.getAttribute('data-code');
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '복사됨!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '복사';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  });
+
+  // Sidebar active link
+  const sections = document.querySelectorAll('section[id], .section[id]');
+  const navLinks = document.querySelectorAll('.sidebar nav a');
+
+  function updateActiveLink() {
+    let current = '';
+    sections.forEach(section => {
+      const top = section.offsetTop - 100;
+      if (window.scrollY >= top) {
+        current = section.id;
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  // Progress bar
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    document.getElementById('progressFill').style.width = progress + '%';
+  }
+
+  window.addEventListener('scroll', () => {
+    updateActiveLink();
+    updateProgress();
+  });
+
+  // Mobile menu
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+
+  // Close sidebar on link click (mobile)
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    });
+  });
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(anchor.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Initial state
+  updateActiveLink();
+</script>
+
+</body>
+</html>
